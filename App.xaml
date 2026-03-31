@@ -1,0 +1,17 @@
+﻿<Application x:Class="Hangman_Game.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Hangman_Game"
+             xmlns:converters="clr-namespace:Hangman_Game.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+        <converters:CategoryToBooleanConverter x:Key="CategoryToBooleanConverter" />
+        <converters:StatusToVisibilityConverter x:Key="StatusToVisibilityConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBoolConverter" />
+        <converters:NullableBooleanToVisibilityConverter x:Key="TrueToVisConverter" TargetValue="True" />
+        <converters:NullableBooleanToVisibilityConverter x:Key="FalseToVisConverter" TargetValue="False" />
+        <converters:ImagePathConverter x:Key="ImagePathConverter" />
+    </Application.Resources>
+</Application>

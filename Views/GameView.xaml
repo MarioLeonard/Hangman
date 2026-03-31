@@ -1,0 +1,143 @@
+<UserControl x:Class="Hangman_Game.Views.GameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Focusable="True">
+    
+    <UserControl.InputBindings>
+        <!-- Menu Shortcuts -->
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NewGameCommand}" />
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveGameCommand}" />
+        <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenGameCommand}" />
+        <KeyBinding Key="Esc" Command="{Binding CancelCommand}" />
+        
+        <!-- Letter Shortcuts -->
+        <KeyBinding Key="A" Command="{Binding GuessLetterCommand}" CommandParameter="A" />
+        <KeyBinding Key="B" Command="{Binding GuessLetterCommand}" CommandParameter="B" />
+        <KeyBinding Key="C" Command="{Binding GuessLetterCommand}" CommandParameter="C" />
+        <KeyBinding Key="D" Command="{Binding GuessLetterCommand}" CommandParameter="D" />
+        <KeyBinding Key="E" Command="{Binding GuessLetterCommand}" CommandParameter="E" />
+        <KeyBinding Key="F" Command="{Binding GuessLetterCommand}" CommandParameter="F" />
+        <KeyBinding Key="G" Command="{Binding GuessLetterCommand}" CommandParameter="G" />
+        <KeyBinding Key="H" Command="{Binding GuessLetterCommand}" CommandParameter="H" />
+        <KeyBinding Key="I" Command="{Binding GuessLetterCommand}" CommandParameter="I" />
+        <KeyBinding Key="J" Command="{Binding GuessLetterCommand}" CommandParameter="J" />
+        <KeyBinding Key="K" Command="{Binding GuessLetterCommand}" CommandParameter="K" />
+        <KeyBinding Key="L" Command="{Binding GuessLetterCommand}" CommandParameter="L" />
+        <KeyBinding Key="M" Command="{Binding GuessLetterCommand}" CommandParameter="M" />
+        <KeyBinding Key="N" Command="{Binding GuessLetterCommand}" CommandParameter="N" />
+        <KeyBinding Key="O" Command="{Binding GuessLetterCommand}" CommandParameter="O" />
+        <KeyBinding Key="P" Command="{Binding GuessLetterCommand}" CommandParameter="P" />
+        <KeyBinding Key="Q" Command="{Binding GuessLetterCommand}" CommandParameter="Q" />
+        <KeyBinding Key="R" Command="{Binding GuessLetterCommand}" CommandParameter="R" />
+        <KeyBinding Key="S" Command="{Binding GuessLetterCommand}" CommandParameter="S" />
+        <KeyBinding Key="T" Command="{Binding GuessLetterCommand}" CommandParameter="T" />
+        <KeyBinding Key="U" Command="{Binding GuessLetterCommand}" CommandParameter="U" />
+        <KeyBinding Key="V" Command="{Binding GuessLetterCommand}" CommandParameter="V" />
+        <KeyBinding Key="W" Command="{Binding GuessLetterCommand}" CommandParameter="W" />
+        <KeyBinding Key="X" Command="{Binding GuessLetterCommand}" CommandParameter="X" />
+        <KeyBinding Key="Y" Command="{Binding GuessLetterCommand}" CommandParameter="Y" />
+        <KeyBinding Key="Z" Command="{Binding GuessLetterCommand}" CommandParameter="Z" />
+    </UserControl.InputBindings>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Menu System -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New Game" Command="{Binding NewGameCommand}"/>
+                <MenuItem Header="_Open Game" Command="{Binding OpenGameCommand}"/>
+                <MenuItem Header="_Save Game" Command="{Binding SaveGameCommand}"/>
+                <MenuItem Header="S_tatistics" Command="{Binding ShowStatisticsCommand}"/>
+                <Separator/>
+                <MenuItem Header="_Cancel" Command="{Binding CancelCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Categories">
+                <MenuItem Header="All Categories" Command="{Binding ChangeCategoryCommand}" CommandParameter="All Categories" IsChecked="{Binding Path=GameState.SelectedCategory, Mode=OneWay, Converter={StaticResource CategoryToBooleanConverter}, ConverterParameter='All Categories'}"/>
+                <MenuItem Header="Cars" Command="{Binding ChangeCategoryCommand}" CommandParameter="Cars" IsChecked="{Binding Path=GameState.SelectedCategory, Mode=OneWay, Converter={StaticResource CategoryToBooleanConverter}, ConverterParameter='Cars'}"/>
+                <MenuItem Header="Movies" Command="{Binding ChangeCategoryCommand}" CommandParameter="Movies" IsChecked="{Binding Path=GameState.SelectedCategory, Mode=OneWay, Converter={StaticResource CategoryToBooleanConverter}, ConverterParameter='Movies'}"/>
+                <MenuItem Header="Rivers" Command="{Binding ChangeCategoryCommand}" CommandParameter="Rivers" IsChecked="{Binding Path=GameState.SelectedCategory, Mode=OneWay, Converter={StaticResource CategoryToBooleanConverter}, ConverterParameter='Rivers'}"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Command="{Binding ShowAboutCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Status Indication HUD -->
+        <Border Grid.Row="1" Background="#EEE" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding GameState.SelectedCategory, StringFormat='Category: {0}'}" FontSize="14" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="{Binding GameState.CurrentLevel, StringFormat='Level: {0}'}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="{Binding GameState.ConsecutiveWins, StringFormat='Streak: {0}/3'}" FontSize="14" HorizontalAlignment="Center" Foreground="Green"/>
+                <TextBlock Grid.Column="3" Text="{Binding GameState.TimeRemaining, StringFormat='Time: {0}s'}" FontSize="14" FontWeight="Bold" Foreground="DarkRed" HorizontalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="{Binding CurrentUser.Username}" FontSize="20" HorizontalAlignment="Center" Margin="10"/>
+            
+            <Image Source="{Binding CurrentHangmanImage}" Height="150" Stretch="Uniform" Margin="0,10">
+                <Image.Style>
+                    <Style TargetType="Image">
+                        <!-- Graceful fallback visually if image files haven't been provided into Assets/Hangman folder yet -->
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentHangmanImage}" Value="{x:Null}">
+                                <Setter Property="Opacity" Value="0.2"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+            
+            <TextBlock Text="{Binding GameState.DisplayWord}" FontSize="40" FontWeight="Bold" HorizontalAlignment="Center" Margin="10,20"/>
+            
+            <ItemsControl ItemsSource="{Binding Alphabet}" Margin="0,10">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="7"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding DataContext.GuessLetterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                CommandParameter="{Binding Character}" 
+                                IsEnabled="{Binding IsGuessed, Converter={StaticResource InverseBoolConverter}}"
+                                Margin="2" Width="35" Height="35">
+                            <Grid>
+                                <TextBlock Text="{Binding Character}" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Path Data="M 0,0 L 20,20 M 20,0 L 0,20" Stroke="Red" StrokeThickness="3" Stretch="Fill"
+                                      Visibility="{Binding IsCorrect, Converter={StaticResource FalseToVisConverter}}" Margin="5"/>
+                                <Ellipse Fill="Green" Opacity="0.4"
+                                         Visibility="{Binding IsCorrect, Converter={StaticResource TrueToVisConverter}}" Margin="2"/>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <TextBlock Text="{Binding GameState.AttemptsLeft, StringFormat='Attempts Left: {0}'}" FontSize="18" HorizontalAlignment="Center" Margin="10"/>
+            <TextBlock Text="{Binding GameState.Status}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Command="{Binding NextLevelCommand}" Content="Next Level" Width="100" Margin="10" 
+                        Visibility="{Binding GameState.Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter='Level Won'}"/>
+                <Button Command="{Binding NewGameCommand}" Content="Restart Game" Width="100" Margin="10"/>
+                <Button Command="{Binding CancelCommand}" Content="End Session" Width="100" Margin="10"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
