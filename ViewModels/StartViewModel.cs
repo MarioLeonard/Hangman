@@ -33,9 +33,6 @@ public partial class StartViewModel : ObservableObject
     private ObservableCollection<string> _predefinedImages;
 
     [ObservableProperty]
-    private string? _selectedPredefinedImage;
-
-    [ObservableProperty]
     private string _errorMessage = string.Empty;
 
     public List<string> AvatarPaths { get; private set; } = new();
@@ -138,15 +135,6 @@ public partial class StartViewModel : ObservableObject
         if (imagePath != null)
         {
             NewSelectedImagePath = imagePath;
-            SelectedPredefinedImage = null; // Clear predefined selection
-        }
-    }
-
-    partial void OnSelectedPredefinedImageChanged(string? value)
-    {
-        if (value != null)
-        {
-            NewSelectedImagePath = value;
         }
     }
 
@@ -167,7 +155,6 @@ public partial class StartViewModel : ObservableObject
         
         NewUsername = string.Empty;
         NewSelectedImagePath = null;
-        SelectedPredefinedImage = null;
     }
 
     private bool CanCreateUser()

@@ -1,10 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Hangman_Game.Services;
 using Hangman_Game.Models;
+using Hangman_Game.Commands;
 using System.Linq;
-using System.Windows.Input;
 
 namespace Hangman_Game.ViewModels;
 
@@ -14,6 +13,9 @@ public partial class StatisticsViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly User _currentUser;
 
+    public RelayCommand RefreshCommand { get; }
+    public RelayCommand CloseCommand { get; }
+
     [ObservableProperty]
     private ObservableCollection<UserCategoryStatViewModel> _usersStatistics = new();
 
@@ -22,16 +24,18 @@ public partial class StatisticsViewModel : ObservableObject
         _statisticsService = statisticsService;
         _navigationService = navigationService;
         _currentUser = currentUser;
+        
+        RefreshCommand = new RelayCommand(_ => Refresh());
+        CloseCommand = new RelayCommand(_ => Close());
+        
         LoadStatistics();
     }
 
-    [RelayCommand]
     private void Refresh()
     {
         LoadStatistics();
     }
 
-    [RelayCommand]
     private void Close()
     {
         if (_currentUser != null)

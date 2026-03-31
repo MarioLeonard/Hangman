@@ -1,6 +1,6 @@
 using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Hangman_Game.Helpers;
 using Hangman_Game.Models;
 
 namespace Hangman_Game.Services;
@@ -12,10 +12,6 @@ public class SaveService : ISaveService
     public SaveService()
     {
         _saveDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Saves");
-        if (!Directory.Exists(_saveDirectory))
-        {
-            Directory.CreateDirectory(_saveDirectory);
-        }
     }
 
     private string GetUserDirectory(string username)
@@ -30,74 +26,44 @@ public class SaveService : ISaveService
 
     public async Task SaveGameAsync(SavedGameState gameState)
     {
-        try
+        if (gameState.Id == Guid.Empty)
         {
-            if (gameState.Id == Guid.Empty)
-            {
-                gameState.Id = Guid.NewGuid();
-            }
-            if (gameState.SavedAt == default)
-            {
-                gameState.SavedAt = DateTime.Now;
-            }
+            gameState.Id = Guid.NewGuid();
+        }
+        if (gameState.SavedAt == default)
+        {
+            gameState.SavedAt = DateTime.Now;
+        }
 
-            var userDir = GetUserDirectory(gameState.Username);
-            string filePath = Path.Combine(userDir, $"{gameState.Id}.json");
-            var json = JsonSerializer.Serialize(gameState, new JsonSerializerOptions { WriteIndented = true });
-            
-            using var writer = new StreamWriter(filePath);
-            await writer.WriteAsync(json);
-        }
-        catch (Exception)
-        {
-            throw new Exception("Failed to save the game.");
-        }
+        var userDir = GetUserDirectory(gameState.Username);
+        string filePath = Path.Combine(userDir, $"{gameState.Id}.json");
+        
+        // Simulating async by wrapping the sync helper call to maintain interface signature
+        await Task.Run(() => JsonFileHelper.Save(filePath, gameState));
     }
 
     public void SaveGame(SavedGameState gameState)
     {
-        try
+        if (gameState.Id == Guid.Empty)
         {
-            if (gameState.Id == Guid.Empty)
-            {
-                gameState.Id = Guid.NewGuid();
-            }
-            if (gameState.SavedAt == default)
-            {
-                gameState.SavedAt = DateTime.Now;
-            }
+            gameState.Id = Guid.NewGuid();
+        }
+        if (gameState.SavedAt == default)
+        {
+            gameState.SavedAt = DateTime.Now;
+        }
 
-            var userDir = GetUserDirectory(gameState.Username);
-            string filePath = Path.Combine(userDir, $"{gameState.Id}.json");
-            var json = JsonSerializer.Serialize(gameState, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(filePath, json);
-        }
-        catch (Exception)
-        {
-            // Fail gracefully on write error
-        }
+        var userDir = GetUserDirectory(gameState.Username);
+        string filePath = Path.Combine(userDir, $"{gameState.Id}.json");
+        JsonFileHelper.Save(filePath, gameState);
     }
 
     public SavedGameState? LoadGame(string username, Guid saveId)
     {
-        try
-        {
-            var userDir = GetUserDirectory(username);
-            string filePath = Path.Combine(userDir, $"{saveId}.json");
-            
-            if (!File.Exists(filePath))
-            {
-                return null;
-            }
-
-            var json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<SavedGameState>(json);
-        }
-        catch (Exception)
-        {
-            // Return null to signify no successful restore if corrupted
-            return null;
-        }
+        var userDir = GetUserDirectory(username);
+        string filePath = Path.Combine(userDir, $"{saveId}.json");
+        
+        return JsonFileHelper.Load<SavedGameState>(filePath);
     }
 
     public List<SavedGameState> GetAllSaves(string username)
@@ -110,24 +76,16 @@ public class SaveService : ISaveService
             
             foreach (var file in files)
             {
-                try
+                var state = JsonFileHelper.Load<SavedGameState>(file);
+                if (state != null)
                 {
-                    var json = File.ReadAllText(file);
-                    var state = JsonSerializer.Deserialize<SavedGameState>(json);
-                    if (state != null)
-                    {
-                        saves.Add(state);
-                    }
-                }
-                catch
-                {
-                    // Skip unreadable files
+                    saves.Add(state);
                 }
             }
         }
         catch (Exception)
         {
-            // Return empty list on failure
+            // Return empty list on directory read failure
         }
         
         return saves.OrderByDescending(s => s.SavedAt).ToList();

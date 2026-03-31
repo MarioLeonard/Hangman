@@ -6,9 +6,8 @@ namespace Hangman_Game.Services;
 public interface IDialogService
 {
     bool ConfirmDelete(string username);
-    void ShowStatistics(PlayerStatistics stats);
+    SavedGameState SelectSavedGame(List<SavedGameState> saves);
     void ShowAbout();
     void ShowMessage(string title, string message);
     void ShowError(string title, string message);
-    SavedGameState? SelectSavedGame(List<SavedGameState> saves);
 }

@@ -15,13 +15,3 @@ public class UserStatistics
     public int TotalGamesPlayed { get; set; }
     public Dictionary<string, CategoryStats> CategoriesStats { get; set; } = new();
 }
-
-public class PlayerStatistics
-{
-    public string Username { get; set; } = string.Empty;
-    public int TotalGamesPlayed { get; set; }
-    public int TotalGamesWon { get; set; }
-    public int TotalLevelsCompleted { get; set; }
-
-    public double WinRate => TotalGamesPlayed == 0 ? 0 : (double)TotalGamesWon / TotalGamesPlayed * 100;
-}

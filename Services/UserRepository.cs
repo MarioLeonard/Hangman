@@ -1,45 +1,26 @@
 using System.IO;
 using System.Text.Json;
 using Hangman_Game.Models;
+using Hangman_Game.Helpers;
 
 namespace Hangman_Game.Services;
 
 public class UserRepository : IUserRepository
 {
-    private readonly string _dataDirectory;
     private readonly string _filePath;
     private static readonly object _fileLock = new object();
 
     public UserRepository()
     {
-        _dataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-        _filePath = Path.Combine(_dataDirectory, "users.json");
+        var dataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+        _filePath = Path.Combine(dataDirectory, "users.json");
     }
 
     public List<User> LoadUsers()
     {
         lock (_fileLock)
         {
-            try
-            {
-                if (!Directory.Exists(_dataDirectory))
-                {
-                    Directory.CreateDirectory(_dataDirectory);
-                }
-
-                if (!File.Exists(_filePath))
-                {
-                    return new List<User>();
-                }
-
-                var json = File.ReadAllText(_filePath);
-                return JsonSerializer.Deserialize<List<User>>(json) ?? new List<User>();
-            }
-            catch (Exception)
-            {
-                // Handle or log exception
-                return new List<User>();
-            }
+            return JsonFileHelper.Load<List<User>>(_filePath) ?? new List<User>();
         }
     }
 
@@ -47,20 +28,7 @@ public class UserRepository : IUserRepository
     {
         lock (_fileLock)
         {
-            try
-            {
-                if (!Directory.Exists(_dataDirectory))
-                {
-                    Directory.CreateDirectory(_dataDirectory);
-                }
-
-                var json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(_filePath, json);
-            }
-            catch (Exception)
-            {
-                // Handle or log exception
-            }
+            JsonFileHelper.Save(_filePath, users);
         }
     }
 

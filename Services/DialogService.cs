@@ -18,17 +18,6 @@ public class DialogService : IDialogService
         return result == MessageBoxResult.Yes;
     }
 
-    public void ShowStatistics(PlayerStatistics stats)
-    {
-        var message = $"Username: {stats.Username}\n" +
-                      $"Total Games Played: {stats.TotalGamesPlayed}\n" +
-                      $"Total Games Won: {stats.TotalGamesWon}\n" +
-                      $"Total Levels Completed: {stats.TotalLevelsCompleted}\n" +
-                      $"Win Rate: {stats.WinRate:F2}%";
-
-        MessageBox.Show(message, "Player Statistics", MessageBoxButton.OK, MessageBoxImage.Information);
-    }
-
     public void ShowAbout()
     {
         var message = "Hangman Game\n\n" +
@@ -49,7 +38,7 @@ public class DialogService : IDialogService
         MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
-    public SavedGameState? SelectSavedGame(List<SavedGameState> saves)
+    public SavedGameState SelectSavedGame(List<SavedGameState> saves)
     {
         var dialog = new LoadGameDialog(saves);
         if (Application.Current.MainWindow != null)

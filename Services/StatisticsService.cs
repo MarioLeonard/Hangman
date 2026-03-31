@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Hangman_Game.Models;
+using Hangman_Game.Helpers;
 
 namespace Hangman_Game.Services;
 
@@ -36,21 +36,13 @@ public class StatisticsService : IStatisticsService
                     var files = Directory.GetFiles(_dataDirectory, "*_userstats.json");
                     foreach (var file in files)
                     {
-                        try
+                        var stats = JsonFileHelper.Load<UserStatistics>(file);
+                        if (stats != null && !string.IsNullOrWhiteSpace(stats.Username))
                         {
-                            var json = File.ReadAllText(file);
-                            var stats = JsonSerializer.Deserialize<UserStatistics>(json);
-                            if (stats != null && !string.IsNullOrWhiteSpace(stats.Username))
-                            {
-                                stats.CategoriesStats ??= new Dictionary<string, CategoryStats>();
-                                allStats.Add(stats);
-                            }
-                            else
-                            {
-                                File.Delete(file);
-                            }
+                            stats.CategoriesStats ??= new Dictionary<string, CategoryStats>();
+                            allStats.Add(stats);
                         }
-                        catch
+                        else
                         {
                             try { File.Delete(file); } catch { }
                         }
@@ -62,7 +54,6 @@ public class StatisticsService : IStatisticsService
                 // Ignore directory access errors
             }
         }
-
         return allStats;
     }
 
@@ -76,22 +67,14 @@ public class StatisticsService : IStatisticsService
         lock (_fileLock)
         {
             string filePath = Path.Combine(_dataDirectory, $"{username}_userstats.json");
-            try
+            if (File.Exists(filePath))
             {
-                if (File.Exists(filePath))
+                var stats = JsonFileHelper.Load<UserStatistics>(filePath);
+                if (stats != null && stats.Username == username)
                 {
-                    var json = File.ReadAllText(filePath);
-                    var stats = JsonSerializer.Deserialize<UserStatistics>(json);
-                    if (stats != null && stats.Username == username)
-                    {
-                        stats.CategoriesStats ??= new Dictionary<string, CategoryStats>();
-                        return stats;
-                    }
+                    stats.CategoriesStats ??= new Dictionary<string, CategoryStats>();
+                    return stats;
                 }
-            }
-            catch (Exception)
-            {
-                try { if (File.Exists(filePath)) File.Delete(filePath); } catch { }
             }
         }
         
@@ -129,16 +112,8 @@ public class StatisticsService : IStatisticsService
     {
         if (stats == null || string.IsNullOrWhiteSpace(stats.Username)) return;
 
-        try
-        {
-            string filePath = Path.Combine(_dataDirectory, $"{stats.Username}_userstats.json");
-            var json = JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(filePath, json);
-        }
-        catch (Exception)
-        {
-            // Fail gracefully on save
-        }
+        string filePath = Path.Combine(_dataDirectory, $"{stats.Username}_userstats.json");
+        JsonFileHelper.Save(filePath, stats);
     }
 
     public void DeleteUserStatistics(string username)

@@ -1,6 +1,6 @@
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using Hangman_Game.Commands;
 using Hangman_Game.Models;
 using Hangman_Game.Services;
 using System.Collections.ObjectModel;
@@ -12,7 +12,7 @@ namespace Hangman_Game.ViewModels;
 public partial class GameViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
-    private readonly IWordRepository _wordRepository;
+    private readonly ICategoryService _categoryService;
     private readonly ISaveService _saveService;
     private readonly IStatisticsService _statisticsService;
     private readonly IDialogService _dialogService;
@@ -37,17 +37,43 @@ public partial class GameViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<LetterItem> _alphabet = new();
 
-    public GameViewModel(User user, INavigationService navigationService, IWordRepository wordRepository, ISaveService saveService, IStatisticsService statisticsService, IDialogService dialogService)
+    public RelayCommand GuessLetterCommand { get; }
+    public RelayCommand NextLevelCommand { get; }
+    public RelayCommand NewGameCommand { get; }
+    public RelayCommand OpenGameCommand { get; }
+    public RelayCommand SaveGameCommand { get; }
+    public RelayCommand ShowStatisticsCommand { get; }
+    public RelayCommand CancelCommand { get; }
+    public RelayCommand ChangeCategoryCommand { get; }
+    public RelayCommand ShowAboutCommand { get; }
+
+    public GameViewModel(User user, INavigationService navigationService, ICategoryService categoryService, ISaveService saveService, IStatisticsService statisticsService, IDialogService dialogService)
     {
         CurrentUser = user;
         _navigationService = navigationService;
-        _wordRepository = wordRepository;
+        _categoryService = categoryService;
         _saveService = saveService;
         _statisticsService = statisticsService;
         _dialogService = dialogService;
         
         _currentUserStats = _statisticsService.GetUserStatistics(user.Username);
         
+        GuessLetterCommand = new RelayCommand(GuessLetter);
+        NextLevelCommand = new RelayCommand(_ => NextLevel());
+        NewGameCommand = new RelayCommand(_ => NewGame());
+        OpenGameCommand = new RelayCommand(_ => OpenGame());
+        SaveGameCommand = new RelayCommand(async _ => await SaveGame());
+        ShowStatisticsCommand = new RelayCommand(_ => ShowStatistics());
+        CancelCommand = new RelayCommand(_ => Cancel());
+        ChangeCategoryCommand = new RelayCommand(param => ChangeCategory(param as string));
+        ShowAboutCommand = new RelayCommand(_ => ShowAbout());
+
+        InitializeGameAsync();
+    }
+
+    private async void InitializeGameAsync()
+    {
+        await _categoryService.InitializeAsync();
         LoadWordPools();
         InitializeTimer();
         InitializeHangmanImages();
@@ -56,7 +82,14 @@ public partial class GameViewModel : ObservableObject
 
     private void LoadWordPools()
     {
-        _wordPools = _wordRepository.LoadCategories();
+        var categories = _categoryService.GetCategories()
+            .Where(c => c != CategoryService.AllCategoriesKey)
+            .ToList();
+
+        foreach (var category in categories)
+        {
+            _wordPools[category] = _categoryService.GetWords(category).ToList();
+        }
         ResetAvailableWords();
     }
     
@@ -127,7 +160,6 @@ public partial class GameViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
     private void GuessLetter(object parameter)
     {
         if (parameter == null) return;
@@ -220,7 +252,6 @@ public partial class GameViewModel : ObservableObject
         _currentUserStats = _statisticsService.GetUserStatistics(CurrentUser.Username);
     }
 
-    [RelayCommand]
     private void NextLevel()
     {
         if (GameState.Status != "Level Won") return;
@@ -232,7 +263,6 @@ public partial class GameViewModel : ObservableObject
         StartLevel(currentCategory, prevLevel, prevWins);
     }
 
-    [RelayCommand]
     private void NewGame()
     {
         var category = GameState.SelectedCategory ?? "All Categories";
@@ -313,7 +343,6 @@ public partial class GameViewModel : ObservableObject
         return pickedWord;
     }
 
-    [RelayCommand]
     private void OpenGame()
     {
         _gameTimer?.Stop();
@@ -376,7 +405,6 @@ public partial class GameViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
     private async Task SaveGame()
     {
         if (GameState.Status != "Playing")
@@ -410,7 +438,6 @@ public partial class GameViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
     private void ShowStatistics()
     {
         _gameTimer?.Stop(); // Automatically pause the game while statistics are being viewed to avoid background timer tracking losses
@@ -423,25 +450,21 @@ public partial class GameViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
     private void Cancel()
     {
         _gameTimer?.Stop();
         _navigationService.NavigateToStart();
     }
 
-    [RelayCommand]
     private void ChangeCategory(string category)
     {
-        if (category != GameState.SelectedCategory)
-        {
-            GameState.SelectedCategory = category;
-            ResetAvailableWords(); // Optional specific enhancement: Resets repetition tracking on category swap naturally.
-            NewGame(); // Changing category resets game naturally handling streak wiping per requirements.
-        }
+        if (string.IsNullOrEmpty(category) || category == GameState.SelectedCategory) return;
+        
+        GameState.SelectedCategory = category;
+        ResetAvailableWords(); // Optional specific enhancement: Resets repetition tracking on category swap naturally.
+        NewGame(); // Changing category resets game naturally handling streak wiping per requirements.
     }
 
-    [RelayCommand]
     private void ShowAbout()
     {
         _gameTimer?.Stop(); // Automatically pause the game

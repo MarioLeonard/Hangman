@@ -44,11 +44,11 @@ namespace Hangman_Game
 
         public void NavigateToGame(Models.User currentUser)
         {
-            var wordRepository = new Services.WordRepository();
+            var categoryService = new Services.CategoryService();
             var saveService = new Services.SaveService();
             var statisticsService = new Services.StatisticsService();
             var dialogService = new Services.DialogService();
-            var vm = new ViewModels.GameViewModel(currentUser, this, wordRepository, saveService, statisticsService, dialogService);
+            var vm = new ViewModels.GameViewModel(currentUser, this, categoryService, saveService, statisticsService, dialogService);
             DataContext = vm;
             Content = new Views.GameView { DataContext = vm };
         }
