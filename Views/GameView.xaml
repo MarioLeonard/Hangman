@@ -87,10 +87,18 @@
             </Grid>
         </Border>
 
-        <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="{Binding CurrentUser.Username}" FontSize="20" HorizontalAlignment="Center" Margin="10"/>
+        <Grid Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="{Binding CurrentUser.Username}" FontSize="20" HorizontalAlignment="Center" Margin="10"/>
             
-            <Image Source="{Binding CurrentHangmanImage}" Height="150" Stretch="Uniform" Margin="0,10">
+            <Image Grid.Row="1" Source="{Binding CurrentHangmanImage}" Height="150" Stretch="Uniform" Margin="0,10" HorizontalAlignment="Center">
                 <Image.Style>
                     <Style TargetType="Image">
                         <!-- Graceful fallback visually if image files haven't been provided into Assets/Hangman folder yet -->
@@ -103,9 +111,9 @@
                 </Image.Style>
             </Image>
             
-            <TextBlock Text="{Binding GameState.DisplayWord}" FontSize="40" FontWeight="Bold" HorizontalAlignment="Center" Margin="10,20"/>
+            <TextBlock Grid.Row="2" Text="{Binding GameState.DisplayWord}" FontSize="40" FontWeight="Bold" HorizontalAlignment="Center" Margin="10,20"/>
             
-            <ItemsControl ItemsSource="{Binding Alphabet}" Margin="0,10">
+            <ItemsControl Grid.Row="3" ItemsSource="{Binding Alphabet}" Margin="0,10" HorizontalAlignment="Center">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Columns="7"/>
@@ -129,15 +137,17 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             
-            <TextBlock Text="{Binding GameState.AttemptsLeft, StringFormat='Attempts Left: {0}'}" FontSize="18" HorizontalAlignment="Center" Margin="10"/>
-            <TextBlock Text="{Binding GameState.Status}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
-            
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Command="{Binding NextLevelCommand}" Content="Next Level" Width="100" Margin="10" 
-                        Visibility="{Binding GameState.Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter='Level Won'}"/>
-                <Button Command="{Binding NewGameCommand}" Content="Restart Game" Width="100" Margin="10"/>
-                <Button Command="{Binding CancelCommand}" Content="End Session" Width="100" Margin="10"/>
+            <StackPanel Grid.Row="4" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding GameState.AttemptsLeft, StringFormat='Attempts Left: {0}'}" FontSize="18" HorizontalAlignment="Center" Margin="10"/>
+                <TextBlock Text="{Binding GameState.Status}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding NextLevelCommand}" Content="Next Level" Width="100" Margin="10" 
+                            Visibility="{Binding GameState.Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter='Level Won'}"/>
+                    <Button Command="{Binding NewGameCommand}" Content="Restart Game" Width="100" Margin="10"/>
+                    <Button Command="{Binding CancelCommand}" Content="End Session" Width="100" Margin="10"/>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

@@ -18,30 +18,59 @@
             </Grid.ColumnDefinitions>
 
             <!-- L-Side: User List -->
-            <StackPanel Grid.Column="0" Margin="10">
-                <TextBlock Text="Users" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-                <TextBlock Text="No users found. Please create one." Foreground="Gray" 
+            <Grid Grid.Column="0" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="260"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Users" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Grid.Row="1" Text="No users found. Please create one." Foreground="Gray" 
                            Visibility="{Binding HasUsers, Converter={StaticResource InverseBoolToVis}}" Margin="0,0,0,5"/>
-                <ListBox ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" DisplayMemberPath="Username" Margin="0,0,0,10" Height="200" VerticalAlignment="Top"/>
-            </StackPanel>
+                <ListBox Grid.Row="2" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" Margin="0,0,0,0" VerticalAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <Image Source="{Binding ImagePath, Converter={StaticResource ImagePathConverter}}"
+                                       Width="32" Height="32" Margin="0,0,10,0" Stretch="UniformToFill"/>
+                                <TextBlock Text="{Binding Username}" VerticalAlignment="Center" FontSize="16"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
 
             <!-- R-Side: Avatar Frameworks -->
-            <StackPanel Grid.Column="1" Margin="10">
-                <TextBlock Text="Select Avatar:" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Grid Grid.Column="1" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="260"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Select Avatar:" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Button Command="{Binding PreviousAvatarCommand}" Content="&lt;&lt;" Width="50" Height="200" Margin="0,0,20,0" ToolTip="Previous Avatar" FontSize="20"/>
-                    <Border BorderBrush="LightGray" BorderThickness="1" Width="200" Height="200">
-                        <Image Stretch="Uniform" ToolTip="Preview Avatar">
+                <Grid Grid.Row="1" Margin="0,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Command="{Binding PreviousAvatarCommand}" Content="&lt;&lt;" Width="50" Margin="0,0,5,0" ToolTip="Previous Avatar" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                    
+                    <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="1" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Image Stretch="Uniform" ToolTip="Preview Avatar" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Image.Source>
                                 <Binding Path="CurrentAvatarPath" Converter="{StaticResource ImagePathConverter}" TargetNullValue="pack://application:,,,/Assets/default.png" FallbackValue="pack://application:,,,/Assets/default.png"/>
                             </Image.Source>
                         </Image>
                     </Border>
-                    <Button Command="{Binding NextAvatarCommand}" Content="&gt;&gt;" Width="50" Height="200" Margin="20,0,20,0" ToolTip="Next Avatar" FontSize="20"/>
-                    <Button Command="{Binding SelectAvatarCommand}" Content="Select" Width="100" Height="200" ToolTip="Use this avatar" FontSize="20"/>
-                </StackPanel>
-            </StackPanel>
+                    
+                    <Button Grid.Column="2" Command="{Binding NextAvatarCommand}" Content="&gt;&gt;" Width="50" Margin="0,0,5,0" ToolTip="Next Avatar" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                    
+                    <Button Grid.Column="3" Command="{Binding SelectAvatarCommand}" Content="Select" Width="100" Margin="0,0,0,0" ToolTip="Use this avatar" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                </Grid>
+            </Grid>
         </Grid>
 
         <!-- Bottom Section: Creation and Actions -->

@@ -105,10 +105,10 @@ public partial class GameViewModel : ObservableObject
             Directory.CreateDirectory(basePath);
         }
 
-        // Preload 0 to 6 images to avoid IO bounds during active gameplay tracking attempts left.
-        for (int i = 0; i <= 6; i++)
+        // Load images named hangman_0.jpg through hangman_6.jpg
+        for (int i = 0; i <= GameState.MaxAttempts; i++)
         {
-            string filePath = Path.Combine(basePath, $"{i}.png");
+            string filePath = Path.Combine(basePath, $"hangman_{i}.jpg");
             if (File.Exists(filePath))
             {
                 var bitmap = new BitmapImage();
@@ -121,6 +121,7 @@ public partial class GameViewModel : ObservableObject
             }
             else
             {
+                // Optionally log an error or add a fallback image if missing
                 _hangmanImages.Add(null);
             }
         }
@@ -203,6 +204,9 @@ public partial class GameViewModel : ObservableObject
         {
              UpdateUserStatistics(false);
         }
+
+        GameState.AttemptsLeft = 0; // Force attempts to 0 so the UI updates to show hangman_6
+        UpdateHangmanImage();
 
         GameState.ConsecutiveWins = 0;
         GameState.Status = "Lost";

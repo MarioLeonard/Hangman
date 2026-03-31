@@ -118,6 +118,7 @@ public partial class StartViewModel : ObservableObject
         if (CurrentAvatarPath != null)
         {
             NewSelectedImagePath = CurrentAvatarPath;
+            _dialogService.ShowMessage("Avatar Selected", "Successfully selected avatar for the new user.");
         }
     }
 
@@ -187,6 +188,12 @@ public partial class StartViewModel : ObservableObject
         if (Users.Any(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase)))
         {
             ErrorMessage = "Username already exists.";
+            return false;
+        }
+        
+        if (string.IsNullOrEmpty(NewSelectedImagePath))
+        {
+            ErrorMessage = "An avatar must be selected.";
             return false;
         }
 
