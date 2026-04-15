@@ -34,7 +34,7 @@ public class UserManagementService : IUserManagementService
 
         bool hasError = false;
 
-        // 1. Delete all saves
+        // Delete all saves
         try
         {
             _saveService.DeleteAllSaves(username);
@@ -45,7 +45,7 @@ public class UserManagementService : IUserManagementService
             // Log or ignore failure, continue deletion process
         }
 
-        // 2. Delete statistics
+        // Delete statistics
         try
         {
             _statisticsService.DeleteUserStatistics(username);
@@ -56,8 +56,7 @@ public class UserManagementService : IUserManagementService
             // Log or ignore failure, continue deletion process
         }
 
-        // 3. Remove image reference (Optional cleanup if it's a custom uploaded image specific to this user)
-        // Note: Predefined assets should ideally stay. If a user uploads a new custom file, it can be deleted.
+
         try
         {
             if (!string.IsNullOrEmpty(targetUser.ImagePath))
@@ -79,7 +78,7 @@ public class UserManagementService : IUserManagementService
             // Ignore if image is locked/in-use or already removed.
         }
 
-        // 4. Finally, remove user from repository and save changes.
+        // Finally, remove user from repository and save changes.
         try 
         {
             _userRepository.DeleteUser(targetUser);

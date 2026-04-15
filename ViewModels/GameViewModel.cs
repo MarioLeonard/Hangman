@@ -138,7 +138,6 @@ public partial class GameViewModel : ObservableObject
             Directory.CreateDirectory(basePath);
         }
 
-        // Load images named hangman_0.jpg through hangman_6.jpg
         for (int i = 0; i <= GameState.MaxAttempts; i++)
         {
             string filePath = Path.Combine(basePath, $"hangman_{i}.jpg");
@@ -237,7 +236,7 @@ public partial class GameViewModel : ObservableObject
              UpdateUserStatistics(false);
         }
 
-        GameState.AttemptsLeft = 0; // Force attempts to 0 so the UI updates to show hangman_6
+        GameState.AttemptsLeft = 0; 
         UpdateHangmanImage();
 
         GameState.ConsecutiveWins = 0;
@@ -281,7 +280,7 @@ public partial class GameViewModel : ObservableObject
             CurrentLevel = level,
             ConsecutiveWins = consecutiveWins,
             SelectedCategory = category,
-            TimeRemaining = 30, // Updated logic required starting at 30
+            TimeRemaining = 30, 
             Status = "Playing"
         };
         
@@ -328,13 +327,11 @@ public partial class GameViewModel : ObservableObject
                 pool = _availableWords[category];
             }
             
-            // Re-check just in case the original data file pool was literally empty
             if (pool.Count == 0) return "DEFAULT"; 
         }
 
         var pickedWord = pool[_random.Next(pool.Count)];
         
-        // Anti-repetition logic: remove the picked word from all tracking pools it exists in
         foreach(var availableList in _availableWords.Values)
         {
             availableList.Remove(pickedWord);
@@ -377,7 +374,6 @@ public partial class GameViewModel : ObservableObject
                 Status = loadedData.Status
             };
 
-            // Restore letter alphabet state mapping correct / incorrect UI representations
             InitializeAlphabet();
             foreach (var letter in Alphabet)
             {
@@ -440,8 +436,8 @@ public partial class GameViewModel : ObservableObject
 
     private void ShowStatistics()
     {
-        _gameTimer?.Stop(); // Automatically pause the game while statistics are being viewed to avoid background timer tracking losses
-        
+        _gameTimer?.Stop(); 
+
         _navigationService.NavigateToStatistics(CurrentUser);
         
         if (GameState.Status == "Playing")
@@ -461,8 +457,8 @@ public partial class GameViewModel : ObservableObject
         if (string.IsNullOrEmpty(category) || category == GameState.SelectedCategory) return;
         
         GameState.SelectedCategory = category;
-        ResetAvailableWords(); // Optional specific enhancement: Resets repetition tracking on category swap naturally.
-        NewGame(); // Changing category resets game naturally handling streak wiping per requirements.
+        ResetAvailableWords(); 
+        NewGame(); 
     }
 
     private void ShowAbout()
