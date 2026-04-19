@@ -11,13 +11,34 @@ namespace Hangman_Game.Converters
         {
             if (value is string relativePath && !string.IsNullOrEmpty(relativePath))
             {
-                // If it is already an absolute path or pack URI, return as-is
-                if (Path.IsPathRooted(relativePath) || relativePath.StartsWith("pack://"))
+                // If it is already a pack URI, return as-is
+                if (relativePath.StartsWith("pack://"))
                 {
                     return relativePath;
                 }
 
-                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
+                // Build the absolute path
+                string absolutePath;
+                if (Path.IsPathRooted(relativePath))
+                {
+                    absolutePath = relativePath;
+                }
+                else
+                {
+                    absolutePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
+                }
+
+                // Check if the file exists; if not, use default image
+                if (File.Exists(absolutePath))
+                {
+                    return absolutePath;
+                }
+                else
+                {
+                    // Return default image if the file doesn't exist
+                    string defaultImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "default.jpg");
+                    return File.Exists(defaultImagePath) ? defaultImagePath : null;
+                }
             }
             return null;
         }

@@ -38,7 +38,6 @@ public class SaveService : ISaveService
         var userDir = GetUserDirectory(gameState.Username);
         string filePath = Path.Combine(userDir, $"{gameState.Id}.json");
         
-        // Simulating async by wrapping the sync helper call to maintain interface signature
         await Task.Run(() => JsonFileHelper.Save(filePath, gameState));
     }
 

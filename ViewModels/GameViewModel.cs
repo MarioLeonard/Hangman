@@ -145,7 +145,7 @@ public partial class GameViewModel : ObservableObject
             {
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad; // Preload entirely to memory
+                bitmap.CacheOption = BitmapCacheOption.OnLoad; 
                 bitmap.UriSource = new Uri(filePath, UriKind.Absolute);
                 bitmap.EndInit();
                 bitmap.Freeze();
@@ -223,7 +223,8 @@ public partial class GameViewModel : ObservableObject
         }
         else
         {
-            StartLevel(GameState.SelectedCategory ?? "All Categories", GameState.CurrentLevel + 1, GameState.ConsecutiveWins);
+            GameState.Status = "Level Won";
+            UpdateUserStatistics(true);
         }
     }
 
@@ -241,7 +242,7 @@ public partial class GameViewModel : ObservableObject
 
         GameState.ConsecutiveWins = 0;
         GameState.Status = "Lost";
-        GameState.DisplayWord = string.Join(" ", GameState.CurrentWord.ToCharArray()); // Reveal word
+        GameState.DisplayWord = string.Join(" ", GameState.CurrentWord.ToCharArray()); 
     }
 
     private void UpdateUserStatistics(bool isWon)
@@ -284,7 +285,6 @@ public partial class GameViewModel : ObservableObject
             Status = "Playing"
         };
         
-        // Reset GuessedLetters here so the display word correctly recalculates
         GameState.GuessedLetters.Clear();
 
         InitializeAlphabet();
@@ -310,10 +310,9 @@ public partial class GameViewModel : ObservableObject
         }
         else
         {
-            return "DEFAULT"; // Edge-case
+            return "DEFAULT"; 
         }
 
-        // If pool is empty (no repetition enhancement triggered), reset the specific active tracker pool so we don't softly crash.
         if (pool.Count == 0)
         {
             if (category == "All Categories")
@@ -463,7 +462,7 @@ public partial class GameViewModel : ObservableObject
 
     private void ShowAbout()
     {
-        _gameTimer?.Stop(); // Automatically pause the game
+        _gameTimer?.Stop(); 
         
         _dialogService.ShowAbout();
         

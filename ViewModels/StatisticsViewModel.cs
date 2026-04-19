@@ -13,7 +13,6 @@ public partial class StatisticsViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly User _currentUser;
 
-    public RelayCommand RefreshCommand { get; }
     public RelayCommand CloseCommand { get; }
 
     [ObservableProperty]
@@ -25,14 +24,8 @@ public partial class StatisticsViewModel : ObservableObject
         _navigationService = navigationService;
         _currentUser = currentUser;
         
-        RefreshCommand = new RelayCommand(_ => Refresh());
         CloseCommand = new RelayCommand(_ => Close());
         
-        LoadStatistics();
-    }
-
-    private void Refresh()
-    {
         LoadStatistics();
     }
 

@@ -56,7 +56,7 @@ public class UserManagementService : IUserManagementService
             // Log or ignore failure, continue deletion process
         }
 
-
+        // Delete Custom Profile Image
         try
         {
             if (!string.IsNullOrEmpty(targetUser.ImagePath))

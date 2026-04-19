@@ -18,7 +18,6 @@ public partial class StartViewModel : ObservableObject
     private ObservableCollection<User> _users;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasUsers))]
     private User? _selectedUser;
 
     public bool HasUsers => Users.Any();
@@ -142,7 +141,7 @@ public partial class StartViewModel : ObservableObject
     {
         ErrorMessage = string.Empty;
         var username = NewUsername.Trim();
-        var imagePath = NewSelectedImagePath ?? "Assets/default.png"; // Fallback image
+        var imagePath = NewSelectedImagePath ?? "Assets/default.jpg"; // Fallback image
 
         var newUser = new User 
         { 
