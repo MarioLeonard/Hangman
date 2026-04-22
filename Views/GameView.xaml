@@ -105,7 +105,6 @@
             <Image Grid.Row="1" Source="{Binding CurrentHangmanImage}" Height="150" Stretch="Uniform" Margin="0,10" HorizontalAlignment="Center">
                 <Image.Style>
                     <Style TargetType="Image">
-                        <!-- Graceful fallback visually if image files haven't been provided into Assets/Hangman folder yet -->
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding CurrentHangmanImage}" Value="{x:Null}">
                                 <Setter Property="Opacity" Value="0.2"/>

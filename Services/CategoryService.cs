@@ -50,7 +50,6 @@ namespace Hangman_Game.Services
             }
             catch (Exception ex)
             {
-                // Handle exceptions (e.g., malformed JSON)
                 System.Diagnostics.Debug.WriteLine($"Failed to load categories: {ex.Message}");
             }
             finally
